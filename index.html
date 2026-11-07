@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>علم وتقدم | التصميم الميكانيكي</title>
+<style>
+:root{--navy:#102b46;--blue:#1769aa;--gold:#f0bd4f;--bg:#f3f6fa;--ink:#172b3d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Tahoma,Arial,sans-serif;line-height:1.7}
+header{background:linear-gradient(120deg,#102b46,#1b659c);color:#fff;padding:28px 18px;text-align:center}
+.logo{font-size:2.4rem;color:var(--gold)}h1{margin:4px 0;color:#fff;font-size:2rem}.sub{margin:0;color:#d9eafa}
+.wrap{max-width:1100px;margin:24px auto;padding:0 14px;display:grid;grid-template-columns:minmax(260px,340px) 1fr;gap:18px}
+.panel,.preview,.info{background:#fff;border:1px solid #e1e8f0;border-radius:16px;padding:18px;box-shadow:0 5px 20px #16324d0b}
+h2{margin:0 0 12px;color:var(--navy);font-size:1.25rem}
+label{display:block;font-weight:bold;margin:12px 0 5px}
+select,input{width:100%;padding:11px;border:1px solid #cbd6e2;border-radius:9px;font:inherit;background:#fff}
+button{border:0;border-radius:10px;padding:11px 15px;font:inherit;font-weight:bold;cursor:pointer}
+.primary{background:var(--blue);color:#fff;width:100%;margin-top:16px}.secondary{background:#e8f0f8;color:var(--navy)}
+.preview{min-height:420px;display:flex;flex-direction:column}
+.stage{flex:1;min-height:300px;background:linear-gradient(#fff,#f8fbff);border:1px dashed #c7d5e4;border-radius:12px;display:grid;place-items:center;overflow:hidden}
+svg{max-width:100%;max-height:340px}
+.measure{color:#5d7083;font-size:.9rem;margin-top:10px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:0 0 24px}
+.info p{margin:4px 0;color:#53677a}
+footer{text-align:center;background:var(--navy);color:#dce9f5;padding:20px;margin-top:28px}
+.note{font-size:.88rem;color:#75501a;background:#fff7e5;padding:10px;border-radius:9px;margin-top:14px}
+@media(max-width:760px){.wrap{grid-template-columns:1fr}.preview{min-height:380px}}
+</style></head>
+<body>
+<header><div class="logo">⚙</div><h1>علم وتقدم</h1><p class="sub">منصة التصميم والميكانيك — Science & Progress</p><p>التصميم الدقيق بداية الابتكار | La précision, début de l'innovation</p></header>
+<div class="wrap">
+<section class="panel">
+<h2>🛠️ صمّم قطعة ميكانيكية</h2>
+<label for="part">اختر نوع القطعة</label>
+<select id="part" onchange="updateFields()">
+<option value="shaft">محور أسطواني — Axe cylindrique</option>
+<option value="gear">ترس — Engrenage</option>
+<option value="bolt">برغي — Boulon</option>
+<option value="washer">وردة / حلقة — Rondelle</option>
+</select>
+<div id="fields"></div>
+<button class="primary" onclick="drawPart()">إنشاء الرسم</button>
+<button class="secondary" style="width:100%;margin-top:9px" onclick="downloadSVG()">تحميل الرسم بصيغة SVG</button>
+<div class="note">هذه أداة تعليمية لرسم مخطط ثنائي الأبعاد مبسّط، وليست برنامج CAD صناعيًا ولا تُستخدم وحدها لتصنيع قطع حقيقية.</div>
+</section>
+<section class="preview">
+<h2>معاينة التصميم | Aperçu</h2>
+<div class="stage" id="stage"><div style="text-align:center;color:#789">اختر قطعة ثم اضغط «إنشاء الرسم»<br>Choisissez une pièce puis cliquez sur «Créer»</div></div>
+<div class="measure" id="measure">ستظهر الأبعاد هنا.</div>
+</section>
+</div>
+<main style="max-width:1100px;margin:auto;padding:0 14px">
+<div class="cards">
+<div class="info"><h2>⚙️ التروس</h2><p>تنقل الحركة الدورانية بين المحاور.</p><p dir="ltr">Les engrenages transmettent le mouvement rotatif.</p></div>
+<div class="info"><h2>🔩 البراغي</h2><p>تُستعمل لربط وتجميع القطع.</p><p dir="ltr">Les boulons servent à assembler les pièces.</p></div>
+<div class="info"><h2>📏 المحاور</h2><p>تحمل العناصر الدوارة وتنقل العزم.</p><p dir="ltr">Les axes supportent les éléments rotatifs.</p></div>
+</div>
+</main>
+<footer>إعداد وإنجاز: <strong>أحمد بلحاج</strong><br>Réalisé par : Ahmed Belhadj · © 2026</footer>
+<script>
+const $=id=>document.getElementById(id);
+function field(id,label,val,min=1,max=300){return `<label for="${id}">${label}</label><input id="${id}" type="number" min="${min}" max="${max}" value="${val}">`}
+function updateFields(){
+ const p=$('part').value;let s='';
+ if(p==='shaft')s=field('d','القطر (mm) — Diamètre',30,5,100)+field('l','الطول (mm) — Longueur',100,10,300);
+ if(p==='gear')s=field('teeth','عدد الأسنان — Nombre de dents',12,6,30)+field('r','نصف القطر التقريبي (mm)',65,30,110);
+ if(p==='bolt')s=field('d','قطر البرغي (mm) — Diamètre',12,4,40)+field('l','الطول (mm) — Longueur',65,15,180);
+ if(p==='washer')s=field('outer','القطر الخارجي (mm)',50,15,120)+field('inner','القطر الداخلي (mm)',18,5,100);
+ $('fields').innerHTML=s;drawPart();
+}
+function val(id,def){let x=Number($(id)?.value);return Number.isFinite(x)&&x>0?x:def}
+function drawPart(){
+ const p=$('part').value;let svg='',desc='';
+ if(p==='shaft'){
+  let d=val('d',30),l=val('l',100),w=Math.min(260,l*2),h=Math.max(24,Math.min(90,d*1.3));
+  svg=`<svg viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g"><stop stop-color="#8ba9c4"/><stop offset=".5" stop-color="#e4edf5"/><stop offset="1" stop-color="#6d8eac"/></linearGradient></defs><rect x="${(360-w)/2}" y="${110-h/2}" width="${w}" height="${h}" rx="${h/2}" fill="url(#g)" stroke="#244a6b" stroke-width="2"/><ellipse cx="${(360-w)/2}" cy="110" rx="9" ry="${h/2}" fill="#b9ccdc" stroke="#244a6b"/><path d="M${(360-w)/2} 55 V45 M${(360+w)/2} 55 V45 M${(360-w)/2} 50 H${(360+w)/2}" stroke="#c34b35" stroke-width="1.5"/><text x="180" y="38" text-anchor="middle" fill="#a33">${l} mm</text><text x="180" y="185" text-anchor="middle" fill="#244a6b">Ø ${d} mm</text></svg>`;
+  desc=`محور أسطواني: القطر ${d} mm، الطول ${l} mm.`;
+ }else if(p==='gear'){
+  let n=Math.round(val('teeth',12)),r=val('r',65),cx=180,cy=110,outer=Math.min(95,r),inner=outer*.72,pts=[];
+  for(let i=0;i<n*4;i++){let a=-Math.PI/2+i*Math.PI*2/(n*4),rr=i%4===1||i%4===2?outer:inner;pts.push(`${cx+rr*Math.cos(a)},${cy+rr*Math.sin(a)}`)}
+  svg=`<svg viewBox="0 0 360 240" xmlns="http://www.w3.org/2000/svg"><polygon points="${pts.join(' ')}" fill="#9dbbd3" stroke="#244a6b" stroke-width="3"/><circle cx="180" cy="110" r="${outer*.25}" fill="#fff" stroke="#244a6b" stroke-width="3"/><circle cx="180" cy="110" r="${outer*.12}" fill="#d9e5ef" stroke="#244a6b"/><text x="180" y="225" text-anchor="middle" fill="#244a6b">${n} أسنان / dents</text></svg>`;
+  desc=`ترس تعليمي مبسّط: عدد الأسنان ${n}، نصف القطر التقريبي ${r} mm.`;
+ }else if(p==='bolt'){
+  let d=val('d',12),l=val('l',65),w=Math.min(190,l*2),h=Math.max(18,Math.min(42,d*1.8)),x=(360-w)/2;
+  let threads='';for(let i=0;i<Math.min(15,Math.floor(l/5));i++){let xx=x+55+i*8;threads+=`<path d="M${xx} 110 l7 -${h/2-2}" stroke="#315c7e" stroke-width="2"/>`}
+  svg=`<svg viewBox="0 0 360 230" xmlns="http://www.w3.org/2000/svg"><polygon points="${x-32},${110-h} ${x+15},${110-h} ${x+30},110 ${x+15},${110+h} ${x-32},${110+h} ${x-45},110" fill="#9dbbd3" stroke="#244a6b" stroke-width="2"/><rect x="${x}" y="${110-h/2}" width="${w}" height="${h}" rx="4" fill="#b9ccdc" stroke="#244a6b" stroke-width="2"/>${threads}<text x="180" y="185" text-anchor="middle" fill="#244a6b">Ø ${d} mm · L ${l} mm</text></svg>`;
+  desc=`برغي مبسّط: القطر ${d} mm، الطول ${l} mm.`;
+ }else{
+  let o=val('outer',50),i=val('inner',18);if(i>=o){$('measure').textContent='يجب أن يكون القطر الداخلي أصغر من القطر الخارجي.';return}
+  let ro= Math.min(90,o),ri=ro*i/o;
+  svg=`<svg viewBox="0 0 360 230" xmlns="http://www.w3.org/2000/svg"><circle cx="180" cy="105" r="${ro}" fill="#9dbbd3" stroke="#244a6b" stroke-width="3"/><circle cx="180" cy="105" r="${ri}" fill="#fff" stroke="#244a6b" stroke-width="3"/><text x="180" y="218" text-anchor="middle" fill="#244a6b">Ø ext. ${o} mm · Ø int. ${i} mm</text></svg>`;
+  desc=`حلقة: القطر الخارجي ${o} mm، القطر الداخلي ${i} mm.`;
+ }
+ $('stage').innerHTML=svg;$('measure').textContent=desc;
+}
+function downloadSVG(){let s=$('stage').querySelector('svg');if(!s){alert('أنشئ الرسم أولاً');return}let blob=new Blob([s.outerHTML],{type:'image/svg+xml'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mechdesign.svg';a.click();URL.revokeObjectURL(a.href)}
+updateFields();
+</script></body></html>
